@@ -1,3 +1,3 @@
-# Deep Measure
+# Cosmic string
 
-Using deep leanring for direct measurment. 
+Using deep leanring for cosmic string estimation. 
