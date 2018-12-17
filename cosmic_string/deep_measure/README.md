@@ -1,3 +1,3 @@
 # Deep Measure
 
-Using deep leanring for direct measurment. 
+Using deep learnring for direct measurment. 
