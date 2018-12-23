@@ -8,7 +8,7 @@ import argparse
 import numpy as np
 import pylab as plt
 import healpy as hp
-from ccgpack import sky2patch,ch_mkdir,download
+from ccgpack import ch_mkdir,download
 #from healpy import cartview
 
 cmap = plt.cm.jet
@@ -118,7 +118,7 @@ ch_mkdir('../data/ffp10/')
 for i in range(n_gaussian):
     mm = str(i).zfill(4)
     
-    if not os.path.exists('../data/ffp10/ffp10_lensed_scl_cmb_100_mc_'+mm+'.fits'):
+    if not os.path.exists('../data/ffp10/ffp10_lensed_scl_cmb_100_mc_'+mm+'.fits') or replace:
         download('http://pla.esac.esa.int/pla/aio/product-action?SIMULATED_MAP.FILE_ID=febecop_ffp10_lensed_scl_cmb_100_mc_'+mm+'.fits',
                 '../data/ffp10/ffp10_lensed_scl_cmb_100_mc_'+mm+'.fits')
                 
@@ -127,7 +127,9 @@ for i in range(n_gaussian):
         plt.savefig('../data/ffp10/ffp10_lensed_scl_cmb_100_mc_'+mm+'.jpg')
         plt.close()        
                 
-            
-            
+  
+ch_mkdir('../data/mask/')           
+download('http://pla.esac.esa.int/pla/aio/product-action?MAP.MAP_ID=COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits',
+         '../data/mask/COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits')
             
      

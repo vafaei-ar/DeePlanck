@@ -29,9 +29,9 @@ gmulist = [0]+list(5*10**np.linspace(-8 , -5 , 10))
 ngmu = len(gmulist)
 
 
-tadd = './data/test_set/healpix_p/'
+tadd = '../data/test_set/healpix_p/'
 sim_name = tadd.split('/')[3]
-res_add = './hh/'+sim_name+'/'
+res_add = '../data/classic/'+sim_name+'/'
 ccg.ch_mkdir(res_add)
 
 print('Buiding classical method results:')
@@ -59,9 +59,9 @@ result = p_value(lst1)
 np.save(res_add[:-1],np.array([gmulist,result]))
 
 
-tadd = './data/test_set/ffp10_p/'
+tadd = '../data/test_set/ffp10_p/'
 sim_name = tadd.split('/')[3]
-res_add = './hh/'+sim_name+'/'
+res_add = '../data/classic/'+sim_name+'/'
 ccg.ch_mkdir(res_add)
 
 print('Buiding classical method results:')

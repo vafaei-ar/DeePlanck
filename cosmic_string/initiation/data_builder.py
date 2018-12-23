@@ -21,6 +21,14 @@ print('Building training set:')
 print('String maps:')
 ch_mkdir('../data/training_set/string_p')
 for i in range(2):
+
+    dont = 1
+    for j in range(12):
+        if not os.path.exists('../data/training_set/string_p/'+str(i*12+j)):
+            dont = 0
+    if dont:
+        continue
+
     s = hp.read_map('../data/string/map1n_allz_rtaapixlw_2048_'+str(i+1)+'.fits',nest=0,verbose=0)
     s = hp.smoothing(s,np.radians(5./60),lmax= 3*2048,verbose=0)
     s = hp.reorder(s , r2n=1)
@@ -37,6 +45,14 @@ print('Healpix Gaussian maps:')
 ch_mkdir('../data/training_set/healpix_p')
 add = '../data/healpix/map_2048_'
 for i in range(10):
+
+    dont = 1
+    for j in range(12):
+        if not os.path.exists('../data/training_set/healpix_p/'+str(i*12+j)):
+            dont = 0
+    if dont:
+        continue
+
     mm = str(i)
     g = hp.read_map(add+mm+'.fits',nest=0,verbose=0)
     g = kelvin_check(g)
@@ -55,6 +71,14 @@ print('FFP10 gaussian maps:')
 ch_mkdir('../data/training_set/ffp10_p')        
 add = '../data/ffp10/ffp10_lensed_scl_cmb_100_mc_'
 for i in range(10):
+
+    dont = 1
+    for j in range(12):
+        if not os.path.exists('../data/training_set/ffp10_p/'+str(i*12+j)):
+            dont = 0
+    if dont:
+        continue
+
     mm = str(i).zfill(4)
     g = hp.read_map(add+mm+'.fits',nest=0,verbose=0)
     g = kelvin_check(g)
@@ -96,6 +120,14 @@ for i in range(10):
     gp = sky2patch(g,2)
     for k,gm in enumerate(gmulist):
         dir_name = '{:3.2e}'.format(gm)
+        
+        dont = 1
+        for j in range(12):
+            if not os.path.exists(tadd+dir_name+'/'+str(i*48+j)):
+                dont = 0
+        if dont:
+            continue
+            
         ch_mkdir(tadd+dir_name)
         for j in range(48):
             pop_percent(i*ngmu*48+k*48+j,10*ngmu*48)
@@ -121,6 +153,14 @@ for i in range(10):
     gp = sky2patch(g,2)
     for k,gm in enumerate(gmulist):
         dir_name = '{:3.2e}'.format(gm)
+        
+        dont = 1
+        for j in range(12):
+            if not os.path.exists(tadd+dir_name+'/'+str(i*48+j)):
+                dont = 0
+        if dont:
+            continue
+        
         ch_mkdir(tadd+dir_name)
         for j in range(48):
             pop_percent(i*ngmu*48+k*48+j,10*ngmu*48)
@@ -131,4 +171,20 @@ for i in range(10):
             plt.savefig(tadd+dir_name+'/'+str(i*48+j)+'.jpg')
             plt.close()
 print('d!')
+  
+print('MASK:') 
+dont = 1
+for i in range(48):
+    if not os.path.exists('../data/mask/'+str(i)):
+        dont = 0
+if dont==0:
+    mask = hp.read_map('../data/mask/COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits',nest=1,verbose=0)
+    maskp = sky2patch(mask,2)
+    for i in range(48):
+        pop_percent(i,48)
+        np.save('../data/mask/'+str(i),maskp[i])
+        plt.imshow(maskp[i], cmap=cmap)
+        plt.savefig('../data/mask/'+str(i)+'.jpg')
+        plt.close()
+    print('d!')
   

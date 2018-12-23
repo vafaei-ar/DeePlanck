@@ -177,6 +177,10 @@ def check(name,model,dp):
 
 x_files = glob('../data/training_set/healpix_p/*.npy')
 y_files = glob('../data/training_set/string_p/*.npy')
+if len(x_files)*len(y_files)==0:
+    print('Somthing is wrong with initiation.')
+    exit()
+
 filtf = filt=='ON'
 if filtf:
     def filtf(x):
