@@ -25,7 +25,7 @@ for i in range(2):
 
     dont = 1
     for j in range(12):
-        if not os.path.exists('../data/training_set/string_p/'+str(i*12+j)):
+        if not os.path.exists('../data/training_set/string_p/'+str(i*12+j)+'.npy'):
             dont = 0
     if dont:
         continue
@@ -49,7 +49,7 @@ for i in range(10):
 
     dont = 1
     for j in range(12):
-        if not os.path.exists('../data/training_set/healpix_p/'+str(i*12+j)):
+        if not os.path.exists('../data/training_set/healpix_p/'+str(i*12+j)+'.npy'):
             dont = 0
     if dont:
         continue
@@ -75,7 +75,7 @@ for i in range(10):
 
     dont = 1
     for j in range(12):
-        if not os.path.exists('../data/training_set/ffp10_p/'+str(i*12+j)):
+        if not os.path.exists('../data/training_set/ffp10_p/'+str(i*12+j)+'.npy'):
             dont = 0
     if dont:
         continue
@@ -124,7 +124,7 @@ for i in range(10):
         
         dont = 1
         for j in range(12):
-            if not os.path.exists(tadd+dir_name+'/'+str(i*48+j)):
+            if not os.path.exists(tadd+dir_name+'/'+str(i*48+j)+'.npy'):
                 dont = 0
         if dont:
             continue
@@ -157,7 +157,7 @@ for i in range(10):
         
         dont = 1
         for j in range(12):
-            if not os.path.exists(tadd+dir_name+'/'+str(i*48+j)):
+            if not os.path.exists(tadd+dir_name+'/'+str(i*48+j)+'.npy'):
                 dont = 0
         if dont:
             continue
@@ -176,7 +176,7 @@ print('d!')
 print('MASK:') 
 dont = 1
 for i in range(48):
-    if not os.path.exists('../data/mask/'+str(i)):
+    if not os.path.exists('../data/mask/'+str(i)+'.npy'):
         dont = 0
 if dont==0:
     mask = hp.read_map('../data/mask/COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits',nest=1,verbose=0)
