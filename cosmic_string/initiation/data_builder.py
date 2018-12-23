@@ -1,6 +1,7 @@
 import matplotlib as mpl
 mpl.use('agg')
 
+import os
 import numpy as np
 import healpy as hp
 import pylab as plt
