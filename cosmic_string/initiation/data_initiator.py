@@ -127,9 +127,9 @@ for i in range(n_gaussian):
         plt.savefig('../data/ffp10/ffp10_lensed_scl_cmb_100_mc_'+mm+'.jpg')
         plt.close()        
                 
-  
-ch_mkdir('../data/mask/')           
-download('http://pla.esac.esa.int/pla/aio/product-action?MAP.MAP_ID=COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits',
-         '../data/mask/COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits')
-            
+if not os.path.exists('../data/mask/COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits'):
+    ch_mkdir('../data/mask/')           
+    download('http://pla.esac.esa.int/pla/aio/product-action?MAP.MAP_ID=COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits',
+             '../data/mask/COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits')
+                
      
