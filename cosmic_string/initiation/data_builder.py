@@ -112,6 +112,16 @@ tadd = '../data/test_set/healpix_p/'
 add = '../data/healpix/map_2048_'
 ch_mkdir(tadd)  
 for i in range(10):
+
+    dont = 1
+    for k,gm in enumerate(gmulist):
+        dir_name = '{:3.2e}'.format(gm)
+        for j in range(12):
+            if not os.path.exists(tadd+dir_name+'/'+str(i*48+j)+'.npy'):
+                dont = 0
+    if dont:
+        continue
+
     mm = str(i+10)
     g = hp.read_map(add+mm+'.fits',nest=0,verbose=0)
     g = kelvin_check(g)
@@ -121,14 +131,6 @@ for i in range(10):
     gp = sky2patch(g,2)
     for k,gm in enumerate(gmulist):
         dir_name = '{:3.2e}'.format(gm)
-        
-        dont = 1
-        for j in range(12):
-            if not os.path.exists(tadd+dir_name+'/'+str(i*48+j)+'.npy'):
-                dont = 0
-        if dont:
-            continue
-            
         ch_mkdir(tadd+dir_name)
         for j in range(48):
             pop_percent(i*ngmu*48+k*48+j,10*ngmu*48)
@@ -145,6 +147,16 @@ tadd = '../data/test_set/ffp10_p/'
 add = '../data/ffp10/ffp10_lensed_scl_cmb_100_mc_'
 ch_mkdir(tadd)  
 for i in range(10):
+
+    dont = 1
+    for k,gm in enumerate(gmulist):
+        dir_name = '{:3.2e}'.format(gm)
+        for j in range(12):
+            if not os.path.exists(tadd+dir_name+'/'+str(i*48+j)+'.npy'):
+                dont = 0
+    if dont:
+        continue
+        
     mm = str(i+10).zfill(4)
     g = hp.read_map(add+mm+'.fits',nest=0,verbose=0)
     g = kelvin_check(g)
