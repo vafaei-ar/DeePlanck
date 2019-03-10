@@ -1,166 +1,31 @@
-import matplotlib as plt
-plt.use('agg')
+import matplotlib as mpl
+mpl.use('agg')
 
-import sys
-import numpy as np
+import os
 import ngene as ng
+import numpy as np
 import pylab as plt
-import ccgpack as ccg
+#from matplotlib.colors import LogNorm
 from glob import glob
-import tensorflow as tf
-from random import choice,shuffle
-from matplotlib.colors import LogNorm
+from utils import *
 
-#print( ' *cnn* :  cnn without any dropout , with kernel size = 5, filters =36, iters = 300 , Gu:[1e-9 , 1e-6]. applied on ffp10 simulations ' )
+print("\033[91m" + ' *cnn* :  cnn without any dropout , with kernel size = 3, filters =36, iters = 500 , Gu:[1e-5 , 9e-5]. applied on ffp10 simulations for large strings. learning_rate = 0.5 , data per iter = 1000' +"\033[0m")
 
-n_conv = int(sys.argv[1])
-dofilt = sys.argv[2]
-
-def get_slice(data,nx,ny):
-    """Slice matrix in x and y direction"""
-    lx,ly = data.shape  
-    if nx==0 or nx==lx:
-        slx = slice(0, lx)                
-    else:
-        idx = np.random.randint(0, lx - nx)            
-        slx = slice(idx, (idx+nx))       
-    if ny==0 or ny==ly:
-        sly = slice(0, ly)                
-    else:
-        idy = np.random.randint(0, ly - ny)            
-        sly = slice(idy, (idy+ny))
-    return slx, sly
-
-class DataProvider(object):
-    def __init__(self,n_files,s_files,gmus,
-                 nx=0,ny=0,n_buffer=10,
-                 reload_rate=100,filt=None):
-        
-        self.n_files = n_files
-        self.s_files = s_files
-        
-        nmin = min(len(n_files),len(s_files))
-        if n_buffer>= nmin:
-            n_buffer = nmin
-            self.reload_rate = 0
-            
-        else:
-            self.reload_rate = reload_rate
-            
-        self.nx,self.ny = nx,ny
-        self.n_buffer = n_buffer
-        self.gmus = gmus
-        if filt is None:
-            def filt(x):
-                return x
-        self.filt = filt
-        self.counter = 0
-        self.reload()
-        
-    def reload(self):
-        print('Data provider is reloading...')
-        self.n_set = []
-        self.s_set = []
-#        self.d_set = []
-        
-        ninds = np.arange(len(self.n_files))
-        sinds = np.arange(len(self.s_files))
-        shuffle(ninds)
-        shuffle(sinds)
-        for i in range(self.n_buffer):
-            filen = self.n_files[ninds[i]]
-            files = self.s_files[sinds[i]]
-            self.n_set.append(np.load(filen))
-            signal = np.load(files)
-            self.s_set.append(signal)
-#            if self.filt:
-#                self.d_set.append(self.filt(signal))
-#            else:
-#                self.d_set.append(signal)
-#            
-
-    def get_data(self): 
-        self.counter += 1
-        if self.reload_rate:
-            if self.counter%self.reload_rate==0: 
-                self.reload() 
-        n = choice(self.n_set)
-        sind = choice(np.arange(self.n_buffer))
-        s = self.s_set[sind]
-#        d = self.d_set[sind]
-        return n,s#,d
-              
-
-    def pre_process(self, n, s, gmu):
-        nslice = get_slice(n,self.nx,self.ny)
-        n = n[nslice]
-        sslice = get_slice(s,self.nx,self.ny)
-        s = s[sslice]
-        sn = n + gmu*s
-        sn = self.filt(sn)
-#        d = d[sslice]
-        sn = np.expand_dims(sn,-1)
-#        d = np.expand_dims(d,-1)
-        return sn#,d
-    
-    def __call__(self, n, gmus=None): 
-    
-        if gmus is None:
-            gmus = self.gmus
-#        x,y = self.get_data()
-        X = []
-        Y = []
-        for i in range(n):                
-            n,s = self.get_data()
-            gmu = choice(gmus)
-            sn = self.pre_process(n,s,gmu)
-            X.append(sn)
-            Y.append(-np.log(gmu+1e-30))
-            
-        X = np.array(X)
-        Y = np.array(Y)
-    
-        return X,Y#[:,None]
-
-def arch_maker(x,n_conv):
-    #x_in = tf.placeholder(tf.float32,[None,nx,ny,n_channel])
-    #y_true = tf.placeholder(tf.float32,[None , n_channel])
-    #learning_rate = tf.placeholder(tf.float32)
-    
-    for _ in range(n_conv):
-        x = tf.layers.conv2d(x,filters=16,kernel_size=5,
-                              strides=(1, 1),padding='same',
-                              activation=tf.nn.relu)
-        x = tf.layers.average_pooling2d(x,pool_size=2,strides=2)
-        print(x)
-
-    x = tf.contrib.layers.flatten(x)
-    print(x)
-    x = tf.layers.dense(x, 10 , activation=tf.nn.relu)
-    print(x)
-    y = tf.layers.dense(x, 1 , activation=tf.nn.relu)
-    print(x)
-    return y
-    
-def arch(x):
-    return arch_maker(x,n_conv)
-    
-#def loss(y_true,x_out):
-#    return 1e3*tf.reduce_mean(tf.pow(y_true-x_out,2))
-
-training_epochs = 10
-iterations=10
-n_s = 50
+training_epochs = 100
+iterations=100
+n_s = 100
 learning_rate = 0.05
+dofilt = 'n'
 
-g_files = sorted(glob('./data/training_set/healpix_p/*.npy'))
-s_files = sorted(glob('./data/training_set/string_p/*.npy'))
+g_files = sorted(glob('../data/training_set/ffp10_p/*.npy'))
+s_files = sorted(glob('../data/training_set/string_p/*.npy'))
 
 if len(g_files)*len(s_files)==0:
     print('Somthing is wrong with initiation.')
     exit()
 
 if dofilt[0]=='y':
+    import ccgpack as ccg
     def filt(x):
         return ccg.filters(x,edd_method='sch')
 else:
@@ -168,65 +33,62 @@ else:
 
 #omin,omax = np.log(self.gmb[0]),np.log(self.gmb[1])
 #gmus = np.exp(np.random.uniform(omin,omax,n))
-gmus = [0]+list(5*10**np.linspace(-8 , -5 , 10))
+gmus = [0]+list(10**np.linspace(-5 , -1 , 4))
+n_class = len(gmus)
 dp = DataProvider(g_files,s_files,
                   gmus=gmus,
-                  nx=200,ny=200,n_buffer=10,
+                  nx=10,ny=10,n_buffer=10,
                   reload_rate=10e5,filt=filt)
-                  
-#x,y = dp(4,gmus=np.array(4*[1e-3]))
-#print x.shape
-#print y.shape
-#fig,ax=plt.subplots(1,1,figsize=(5,5))
-#ax.imshow(x[0,:,:,0],norm=LogNorm(),cmap=plt.get_cmap('jet'))
-#plt.title('G + Gu*S')
-#plt.savefig('x_lognorm ')
-#fig,ax=plt.subplots(1,1,figsize=(5,5))
-#ax.imshow(x[0,:,:,0])
-#plt.title('G + Gu*S')
-#plt.savefig('x')
-#exit()
 
-model_add='./model/'+str(n_conv)+'_layers_'+dofilt+'/'
-model = ng.Model(dp,restore=1,
-                 model_add=model_add,
-                 arch=arch)#,loss=loss)
+restore = os.path.isdir('./model')
+restore = 0
 
-learning_rate = learning_rate/(1.02)**1000
-for ii in range(4000):
+def arch(x):
+    return arch_maker(x,0,n_class)
     
-    model.train(data_provider=dp,training_epochs=training_epochs,
-                        iterations=iterations,n_s=n_s,
-                        learning_rate=learning_rate, verbose=1)
-    learning_rate = learning_rate/1.02
+    
+import tensorflow as tf
+def loss(y_true,x_out):
+#    trsh = tf.constant(0.5,dtype=x_out.dtype,shape=tf.shape(x_out))
+#    trsh = tf.fill(tf.shape(x_out), 0.5)
+#    return tf.reduce_mean(tf.pow(y_true - x_out, 2))+0.1*tf.reduce_mean(1./(tf.abs(x_out-trsh)+0.5))
 
-#x,y = dp_total(1000)
-
-#pred = sess.run(y_out, feed_dict={x_in: x})
-#d=abs(pred-y)/y
-#delta=np.mean(d)
-
-#print('accuracy =' , 100*(1-delta))
+#    mean, var = tf.nn.moments(tf.reshape(x_out, [-1]), axes=[0])
+#    return tf.reduce_mean(tf.pow(y_true - x_out, 2))+tf.abs(var-0.5)*1e-4/(var+1e-5)
+#    return tf.losses.softmax_cross_entropy(y_true,x_out)
+    return tf.losses.sigmoid_cross_entropy(y_true,x_out)
 
 
-#r_squared = 1 - ( np.sum((y-pred)**2)/ np.sum((y-np.mean(y))**2) )
-#print('r_squared =' ,r_squared)
+    
+conv = ng.Model(data_provider=dp,
+                     optimizer=tf.train.AdamOptimizer,
+                     loss = loss,
+                     restore=restore,
+                     model_add='./model',
+                     arch=arch)
 
-#measurable= (1-r_squared) * (1e-6 - 1e-9)
-#print('min_measurable=' , measurable)
+conv.train(data_provider=dp,training_epochs=10, 
+            iterations=100, n_s=100,
+            learning_rate = 0.1, verbose=1)
 
-#"""
-#plt.loglog(y , y , 'r--' , label='Gu_pred = Gu_fid')
-#plt.axvline(x = measurable*1e9 , color='g' , label= 'min measurable')
-#plt.loglog(y , pred,'b.')
-#plt.xlabel('Gu_fid')
-#plt.ylabel('Gu_pred')
-#plt.title('ff10')
-##plt.legend(bbox_to_anchor=(1.05, 1),loc =2 , borderaxespad=0.)
-#plt.savefig( '1' ,  bbox_inches='tight')
+for _ in range(5):
+    x,y = dp(1)
+    pred = conv.predict(x)
+    print(np.mean(x),np.argmax(y),np.argmax(pred))
+    
+conv.train(data_provider=dp,training_epochs=10, 
+        iterations=100, n_s=100,
+        learning_rate = 0.01, verbose=1)
 
-#"""
+for _ in range(20):
+    x,y = dp(1)
+    pred = conv.predict(x)
+    print(np.mean(x),np.argmax(y),np.argmax(pred))
+#conv.train(data_provider=dp,training_epochs=training_epochs, 
+#            iterations=iterations, n_s=n_s,
+#            learning_rate = learning_rate, verbose=1)
 
-#end_time = time.time()
-#print('duration=' , timedelta(seconds=end_time - start_time))
-#print('Done! :) ')
+#for _ in range(10):
+#    x,y = dp(1)
+#    pred = conv.predict(x)
+#    print(y,pred)

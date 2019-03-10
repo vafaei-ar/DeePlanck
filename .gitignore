@@ -102,3 +102,11 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+/cosmic_string/data/ffp10/
+/cosmic_string/data/healpix/
+/cosmic_string/data/mask/
+/cosmic_string/data/string/
+/cosmic_string/data/test_set/
+/cosmic_string/data/training_set/
+/cosmic_string/deep_measure/model/
+/cosmic_string/deep_measure/__pycache__/

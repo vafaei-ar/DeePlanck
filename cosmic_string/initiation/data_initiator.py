@@ -17,7 +17,7 @@ cmap.set_bad('gray',1.)
 
 parser = argparse.ArgumentParser(description='Short sample app')
 parser.add_argument('-r', action="store_true", default=False)
-parser.add_argument('--nsim', action="store", type=int, default=20)
+parser.add_argument('--nsim', action="store", type=int, default=4)
 args = parser.parse_args()
 replace = args.r
 n_gaussian = args.nsim

@@ -17,6 +17,8 @@ def kelvin_check(m):
     return m
 
 nside = 2048
+n_gaussian = 4
+n_gaussian = n_gaussian//2
 
 print('Building training set:')
 print('String maps:')
@@ -40,12 +42,12 @@ for i in range(2):
         plt.imshow(patches[j], cmap=cmap)
         plt.savefig('../data/training_set/string_p/'+str(i*12+j)+'.jpg')
         plt.close()
-print('d!')
+print('completed!')
 
 print('Healpix Gaussian maps:')
 ch_mkdir('../data/training_set/healpix_p')
 add = '../data/healpix/map_2048_'
-for i in range(10):
+for i in range(n_gaussian):
 
     dont = 1
     for j in range(12):
@@ -61,7 +63,7 @@ for i in range(10):
     g = hp.reorder(g , r2n=1)
     patches = sky2patch(g,1)
     for j in range(12):
-        pop_percent(i*12+j,10*12)
+        pop_percent(i*12+j,n_gaussian*12)
         np.save('../data/training_set/healpix_p/'+str(i*12+j),patches[j])
         plt.imshow(patches[j], cmap=cmap)
         plt.savefig('../data/training_set/healpix_p/'+str(i*12+j)+'.jpg')
@@ -71,7 +73,7 @@ print('d!')
 print('FFP10 gaussian maps:')
 ch_mkdir('../data/training_set/ffp10_p')        
 add = '../data/ffp10/ffp10_lensed_scl_cmb_100_mc_'
-for i in range(10):
+for i in range(n_gaussian):
 
     dont = 1
     for j in range(12):
@@ -83,11 +85,11 @@ for i in range(10):
     mm = str(i).zfill(4)
     g = hp.read_map(add+mm+'.fits',nest=0,verbose=0)
     g = kelvin_check(g)
-    g = hp.smoothing(g,np.radians(5./60),lmax= 3*2048,verbose=0)
+#    g = hp.smoothing(g,np.radians(5./60),lmax= 3*2048,verbose=0)
     g = hp.reorder(g , r2n=1)
     patches = sky2patch(g,1)
     for j in range(12):
-        pop_percent(i*12+j,10*12)
+        pop_percent(i*12+j,n_gaussian*12)
         np.save('../data/training_set/ffp10_p/'+str(i*12+j),patches[j])
         plt.imshow(patches[j], cmap=cmap)
         plt.savefig('../data/training_set/ffp10_p/'+str(i*12+j)+'.jpg')
@@ -111,7 +113,7 @@ print('Healpix maps:')
 tadd = '../data/test_set/healpix_p/'   
 add = '../data/healpix/map_2048_'
 ch_mkdir(tadd)  
-for i in range(10):
+for i in range(n_gaussian):
 
     dont = 1
     for k,gm in enumerate(gmulist):
@@ -122,7 +124,7 @@ for i in range(10):
     if dont:
         continue
 
-    mm = str(i+10)
+    mm = str(i+n_gaussian)
     g = hp.read_map(add+mm+'.fits',nest=0,verbose=0)
     g = kelvin_check(g)
     gstd = g.std()
@@ -133,7 +135,7 @@ for i in range(10):
         dir_name = '{:3.2e}'.format(gm)
         ch_mkdir(tadd+dir_name)
         for j in range(48):
-            pop_percent(i*ngmu*48+k*48+j,10*ngmu*48)
+            pop_percent(i*ngmu*48+k*48+j,n_gaussian*ngmu*48)
             nsp = np.random.normal(0,gstd/s2n,nshape)
             ptch = gp[j]+gm*sp[j]+nsp
             np.save(tadd+dir_name+'/'+str(i*48+j),ptch)
@@ -146,7 +148,7 @@ print('FFP10 maps:')
 tadd = '../data/test_set/ffp10_p/'
 add = '../data/ffp10/ffp10_lensed_scl_cmb_100_mc_'
 ch_mkdir(tadd)  
-for i in range(10):
+for i in range(n_gaussian):
 
     dont = 1
     for k,gm in enumerate(gmulist):
@@ -157,7 +159,7 @@ for i in range(10):
     if dont:
         continue
         
-    mm = str(i+10).zfill(4)
+    mm = str(i+n_gaussian).zfill(4)
     g = hp.read_map(add+mm+'.fits',nest=0,verbose=0)
     g = kelvin_check(g)
     gstd = g.std()
@@ -176,7 +178,7 @@ for i in range(10):
         
         ch_mkdir(tadd+dir_name)
         for j in range(48):
-            pop_percent(i*ngmu*48+k*48+j,10*ngmu*48)
+            pop_percent(i*ngmu*48+k*48+j,n_gaussian*ngmu*48)
             nsp = np.random.normal(0,gstd/s2n,nshape)
             ptch = gp[j]+gm*sp[j]+nsp
             np.save(tadd+dir_name+'/'+str(i*48+j),ptch)
