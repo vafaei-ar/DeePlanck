@@ -25,6 +25,11 @@ n_gaussian = args.nsim
 nside = 2048
 lmax = 2*nside
 
+def report(count, blockSize, totalSize):
+  	percent = int(count*blockSize*TOTALSIZE)
+  	sys.stdout.write("\r%d%%" % percent + ' complete')
+  	sys.stdout.flush() 
+
 if nside==2048:
     n_string=3
     ex = 'gz'
@@ -87,7 +92,7 @@ for i in range(n_gaussian):
         plt.close()
                 
 ch_mkdir('../data/string/') 
-
+TOTALSIZE = 100/(178.0*1024*1024)
 for i in range(n_string): 
     strnum = str(i+1)
     if nside==4096:
@@ -95,7 +100,7 @@ for i in range(n_string):
     if not os.path.exists('../data/string/map1n_allz_rtaapixlw_'+str(nside)+'_'+str(i+1)+'.fits.'+ex):
         print('Downloading string: '+str(i))
         download('http://cp3.irmp.ucl.ac.be/~ringeval/upload/data/'+str(nside)+'/map1n_allz_rtaapixlw_'+str(nside)+'_'+strnum+'.fits.'+ex,
-          '../data/string/map1n_allz_rtaapixlw_'+str(nside)+'_'+str(i+1)+'.fits.'+ex)
+          '../data/string/map1n_allz_rtaapixlw_'+str(nside)+'_'+str(i+1)+'.fits.'+ex,report=report)
 
     load_status = 0
     if not os.path.exists('../data/string/map1n_allz_rtaapixlw_'+str(nside)+'_'+str(i+1)+'.fits'):
@@ -114,22 +119,23 @@ for i in range(n_string):
         plt.close()
  
 ch_mkdir('../data/ffp10/') 
-                 
+TOTALSIZE = 100/(604.0*1024*1024)            
 for i in range(n_gaussian):
     mm = str(i).zfill(4)
     
     if not os.path.exists('../data/ffp10/ffp10_lensed_scl_cmb_100_mc_'+mm+'.fits') or replace:
         download('http://pla.esac.esa.int/pla/aio/product-action?SIMULATED_MAP.FILE_ID=febecop_ffp10_lensed_scl_cmb_100_mc_'+mm+'.fits',
-                '../data/ffp10/ffp10_lensed_scl_cmb_100_mc_'+mm+'.fits')
+                '../data/ffp10/ffp10_lensed_scl_cmb_100_mc_'+mm+'.fits',report=report)
                 
         ss = hp.read_map('../data/ffp10/ffp10_lensed_scl_cmb_100_mc_'+mm+'.fits',verbose=0,nest=1)    
         hp.mollview(ss, nest=1, cmap=cmap)              
         plt.savefig('../data/ffp10/ffp10_lensed_scl_cmb_100_mc_'+mm+'.jpg')
         plt.close()        
-                
+
+TOTALSIZE = 100/(192.0*1024*1024)                
 if not os.path.exists('../data/mask/COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits'):
     ch_mkdir('../data/mask/')           
     download('http://pla.esac.esa.int/pla/aio/product-action?MAP.MAP_ID=COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits',
-             '../data/mask/COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits')
+             '../data/mask/COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits',report=report)
                 
      
