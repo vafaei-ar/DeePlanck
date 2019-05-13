@@ -8,9 +8,6 @@ import pylab as plt
 from glob import glob
 from ccgpack import sky2patch,ch_mkdir,pop_percent
 
-n_train = 30
-n_test = 22
-
 cmap = plt.cm.jet
 cmap.set_under('w')
 cmap.set_bad('gray',1.)
@@ -66,7 +63,7 @@ for i in range(ntot):
 
 print('FFP10 gaussian maps:')
 dest = '../data/ffp10_p/'
-ntot = 42
+ntot = 10
 for i in range(ntot):
     inmap = '../data/ffp10/ffp10_lensed_scl_cmb_100_mc_'+str(i).zfill(4)+'.fits'
     build_map(inmap,dest,i,ntot,g=1)
