@@ -173,7 +173,6 @@ class DataProvider(object):
     
         return X,Y
 
-#x,y = dp_total(7)
 #fig,ax=plt.subplots(1,1,figsize=(5,5))
 #ax.imshow(x[0,:,:,0],norm=LogNorm(),cmap=plt.get_cmap('jet'))
 #plt.title('G + Gu*S')
@@ -269,6 +268,8 @@ def arch_maker(x,n_conv,n_class):
     print(x)
     x = tf.layers.dense(x, 20 , activation=tf.nn.relu)
     print(x)
+    #x = tf.layers.dense(x, 20 , activation=tf.nn.softmax)
+    #print(x)
     y = tf.layers.dense(x, n_class, activation=tf.nn.softmax)
     print(y)
     print("\033[91m =============== END =============== \033[0m")
