@@ -73,7 +73,7 @@ for i in range(ntot):
 
 print('OBSERVATIONS:') 
 dest = '../data/observations_p/'
-mlist = glob('../../data/observations/*.fits')
+mlist = glob('../data/observations/*.fits')
 for inmap in mlist:
     prefix = inmap.split('/')[-1][:-5]
     print('Observation: '+prefix)

@@ -52,39 +52,39 @@ cl = np.load('../data/cl_planck_lensed.npy')
 ll = cl[:lmax,0]
 cl = cl[:lmax,1]
 
-ch_mkdir('../data/healpix/') 
+#ch_mkdir('../data/healpix/') 
 
-for i in range(n_gaussian):
+#for i in range(n_gaussian):
 
-    if not os.path.exists('../data/healpix/'+'map_'+str(nside)+'_'+str(i)+'.fits') or replace:
-        print('Simulation gaussian healpix map: '+str(i))
+#    if not os.path.exists('../data/healpix/'+'map_'+str(nside)+'_'+str(i)+'.fits') or replace:
+#        print('Simulation gaussian healpix map: '+str(i))
 
-        m,alms = hp.sphtfunc.synfast(cl, nside=nside, lmax=lmax, mmax=None, alm=True, pol=False, pixwin=False, fwhm=0, sigma=None, new=1, verbose=0)
-        cl_map = hp.sphtfunc.alm2cl(alms)
+#        m,alms = hp.sphtfunc.synfast(cl, nside=nside, lmax=lmax, mmax=None, alm=True, pol=False, pixwin=False, fwhm=0, sigma=None, new=1, verbose=0)
+#        cl_map = hp.sphtfunc.alm2cl(alms)
 
-        hp.mollview(m, nest=0, cmap=cmap)
-        hp.write_map('../data/healpix/'+'map_'+str(nside)+'_'+str(i)+'.fits', m, overwrite=1)
-        plt.savefig('../data/healpix/'+'map_'+str(nside)+'_'+str(i)+'.jpg')
-        plt.close()
-            
-        plt.figure(figsize=(10,6))
-        dl1 = []
-        dl2 = []
-        for j in range(ll.shape[0]):
-                dl1.append(ll[j]*(ll[j]+1)*cl[j]/(2*np.pi))
-                dl2.append(ll[j]*(ll[j]+1)*cl_map[j]/(2*np.pi))
+#        hp.mollview(m, nest=0, cmap=cmap)
+#        hp.write_map('../data/healpix/'+'map_'+str(nside)+'_'+str(i)+'.fits', m, overwrite=1)
+#        plt.savefig('../data/healpix/'+'map_'+str(nside)+'_'+str(i)+'.jpg')
+#        plt.close()
+#            
+#        plt.figure(figsize=(10,6))
+#        dl1 = []
+#        dl2 = []
+#        for j in range(ll.shape[0]):
+#                dl1.append(ll[j]*(ll[j]+1)*cl[j]/(2*np.pi))
+#                dl2.append(ll[j]*(ll[j]+1)*cl_map[j]/(2*np.pi))
 
-        plt.plot(ll,dl2,'r--',label='Simulation')
-        plt.plot(ll,dl1,'b--',lw=2,label='Orginal')
-        plt.xscale('log')
-        plt.yscale('log')
-        plt.tick_params(labelsize=15)
-        plt.xlabel(r'$\ell$',fontsize=25)
-        plt.ylabel(r'$D_{\ell}$',fontsize=25)
+#        plt.plot(ll,dl2,'r--',label='Simulation')
+#        plt.plot(ll,dl1,'b--',lw=2,label='Orginal')
+#        plt.xscale('log')
+#        plt.yscale('log')
+#        plt.tick_params(labelsize=15)
+#        plt.xlabel(r'$\ell$',fontsize=25)
+#        plt.ylabel(r'$D_{\ell}$',fontsize=25)
 
-        plt.legend(loc='best',fontsize=20)
-        plt.savefig('../data/healpix/power_'+str(nside)+'_'+str(i)+'.jpg')
-        plt.close()
+#        plt.legend(loc='best',fontsize=20)
+#        plt.savefig('../data/healpix/power_'+str(nside)+'_'+str(i)+'.jpg')
+#        plt.close()
                 
 ch_mkdir('../data/string/') 
 
@@ -126,7 +126,18 @@ for i in range(n_gaussian):
         hp.mollview(ss, nest=1, cmap=cmap)              
         plt.savefig('../data/ffp10/ffp10_lensed_scl_cmb_100_mc_'+mm+'.jpg')
         plt.close()        
-                
+             
+
+obs_adds = {'smica_dr3.fits':'http://pla.esac.esa.int/pla-sl/data-action?MAP.MAP_OID=13485',
+'cr_dr3.fits':'http://pla.esac.esa.int/pla-sl/data-action?MAP.MAP_OID=13470',
+'nilc_dr3.fits':'http://pla.esac.esa.int/pla-sl/data-action?MAP.MAP_OID=13475',        
+'sevem_dr3.fits':'http://pla.esac.esa.int/pla-sl/data-action?MAP.MAP_OID=14631'}
+ch_mkdir('../data/observations/') 
+for name in obs_adds:
+
+    if not os.path.exists(name):   
+        download(obs_adds[name],'../data/observations/'+name)
+
 if not os.path.exists('../data/mask/COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits'):
     ch_mkdir('../data/mask/')           
     download('http://pla.esac.esa.int/pla/aio/product-action?MAP.MAP_ID=COM_Mask_CMB-common-Mask-Int_2048_R3.00.fits',
